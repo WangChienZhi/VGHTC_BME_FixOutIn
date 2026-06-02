@@ -126,6 +126,12 @@
 
 <script>
   let currentAction = "送件";
+  // 新增：控制相機翻轉的邏輯
+  function toggleFlip() {
+    const videoElement = document.getElementById('webcam');
+    // 自動在 <video> 標籤上 切換/移除 .flipped 這個 CSS 類別
+    videoElement.classList.toggle('flipped');
+  }
   const video = document.getElementById('webcam');
   const canvas = document.getElementById('canvas');
   const repairIdInput = document.getElementById('repairId');
@@ -178,9 +184,21 @@
     submitBtn.disabled = true;
     statusDiv.innerHTML = '<span class="loading">安全檢查中，請稍候...</span>';
     
-    // 擷取當前鏡頭畫面
+ // 擷取當前鏡頭畫面 (同步支援水平翻轉拍照)
     const context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.save();
+    
+    // 如果目前畫面是有翻轉的，拍照時也進行水平鏡像翻轉
+    if (video.classList.contains('flipped')) {
+      context.translate(canvas.width, 0);
+      context.scale(-1, 1);
+    }
+    
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    context.restore(); // 恢復畫布狀態
+    
+    // 🌟 這行在裡面了！負責把拍好的照片封裝送出
     const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
     
     const payload = {
