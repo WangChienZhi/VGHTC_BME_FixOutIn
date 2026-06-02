@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>請修單進出登錄系統</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f6f9; color: #333; }
+    .container { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    
+    /* 標題粗體、加大與間距優化（防止字體斷行重疊） */
+    h2 { 
+      text-align: center; 
+      color: #0056b3; 
+      margin-bottom: 32px; 
+      font-weight: bold;
+      font-size: 32px;
+      line-height: 1.4;
+    }
+    
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input[type="text"] { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+    
+    /* 切換按鈕樣式優化 */
+    .action-toggle { display: flex; gap: 10px; margin-bottom: 20px; }
+    .btn-toggle { flex: 1; padding: 12px; font-size: 16px; font-weight: bold; border: 2px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; text-align: center; }
+    .btn-toggle.active-in { background: #e3f2fd; border-color: #2196f3; color: #0d47a1; }
+    .btn-toggle.active-out { background: #fff3e0; border-color: #ff9800; color: #e65100; }
+    
+    /* 視訊預覽視窗比例優化 */
+    #camera-container { width: 100%; margin: 15px 0; text-align: center; background: #eee; border-radius: 4px; overflow: hidden; height: 240px; }
+    video { width: 100%; height: 100%; object-fit: cover; }
+    
+    /* 提交按鈕配色區分 */
+    button[type="submit"] { width: 100%; padding: 12px; color: white; border: none; border-radius: 4px; font-size: 18px; cursor: pointer; transition: background 0.3s; }
+    .submit-in { background: #2196f3; }
+    .submit-in:hover { background: #1e88e5; }
+    .submit-out { background: #ff9800; }
+    .submit-out:hover { background: #f57c00; }
+    button:disabled { background: #ccc !important; cursor: not-allowed; }
+    
+    /* 狀態提示區 */
+    #status { margin-top: 15px; text-align: center; font-weight: bold; font-size: 16px; }
+    .loading { color: #ffc107; }
+    .success { color: #28a745; }
+    .error { color: #dc3545; background: #fdf2f2; padding: 10px; border-radius: 4px; border: 1px solid #dc3545; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>請修送取件登載系統</h2>
+  
+  <!-- 頂部頁籤全部修改為：送件與取件 -->
+  <div class="action-toggle">
+    <div id="toggleIn" class="btn-toggle active-in" onclick="setAction('送件')">辦理：送件 (Check-In)</div>
+    <div id="toggleOut" class="btn-toggle" onclick="setAction('取件')">辦理：取件 (Check-Out)</div>
+  </div>
+  
+  <form id="dataForm" onsubmit="handleSubmit(event)">
+    <div class="form-group">
+      <label for="repairId">請修單號 (條碼機掃描區)</label>
+      <input type="text" id="repairId" required placeholder="請掃描請修單號..." autofocus>
+    </div>
+    
+    <div class="form-group">
+      <label for="cardId">卡號</label>
+      <input type="text" id="cardId" required placeholder="請輸入卡號">
+    </div>
+    
+    <div id="camera-container">
+      <video id="webcam" autoplay playsinline muted></video>
+    </div>
+    
+    <button type="submit" id="submitBtn" class="submit-in">確認提交 (送件)</button>
+  </form>
+  
+  <div id="status"></div>
+</div>
+
+<canvas id="canvas" style="display:none;" width="640" height="480"></canvas>
+
+<script>
+  let currentAction = "送件";
+  const video = document.getElementById('webcam');
+  const canvas = document.getElementById('canvas');
+  const repairIdInput = document.getElementById('repairId');
+  const submitBtn = document.getElementById('submitBtn');
+  const statusDiv = document.getElementById('status');
+
+  // 寬鬆相機調用模式，避免對外接式 Brio 300 鏡頭產生底層安全性刁難
+  async function initWebcam() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      video.srcObject = stream;
+    } catch (err) {
+      statusDiv.innerHTML = '<span class="error">無法開啟攝影機，請檢查瀏覽器權限設定。</span>';
+      submitBtn.disabled = true;
+    }
+  }
+
+  // 切換「送件」或「取件」的 UI 按鈕與文字邏輯
+  function setAction(action) {
+    currentAction = action;
+    const toggleIn = document.getElementById('toggleIn');
+    const toggleOut = document.getElementById('toggleOut');
+    
+    if (action === "送件") {
+      toggleIn.className = "btn-toggle active-in";
+      toggleOut.className = "btn-toggle";
+      submitBtn.className = "submit-in";
+      submitBtn.innerText = "確認提交 (送件)";
+    } else {
+      toggleIn.className = "btn-toggle";
+      toggleOut.className = "btn-toggle active-out";
+      submitBtn.className = "submit-out";
+      submitBtn.innerText = "確認提交 (取件)";
+    }
+    repairIdInput.focus();
+  }
+
+  // 條碼機掃描請修單完成（按下 Enter）後，自動跳格到卡號輸入框
+  repairIdInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('cardId').focus();
+    }
+  });
+
+  // 送出表單資料與拍照
+  function handleSubmit(event) {
+    event.preventDefault();
+    
+    submitBtn.disabled = true;
+    statusDiv.innerHTML = '<span class="loading">安全檢查中，請稍候...</span>';
+    
+    // 擷取當前鏡頭畫面
+    const context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+    
+    const payload = {
+      action: currentAction,
+      repairId: repairIdInput.value,
+      cardId: document.getElementById('cardId').value,
+      image: imageDataUrl
+    };
+    
+    // 呼叫 Code.gs 後端進行資料處理與防錯檢驗
+    google.script.run
+      .withSuccessHandler(function(response) {
+        if(response.success) {
+          statusDiv.innerHTML = '<span class="success">✓ ' + currentAction + ' 紀錄成功！照片已同步上傳。</span>';
+          document.getElementById('dataForm').reset();
+          repairIdInput.focus(); // 成功後焦點自動跳回單號，方便連續操作
+        } else {
+          statusDiv.innerHTML = '<span class="error">⚠️ 錯誤：' + response.error + '</span>';
+        }
+        submitBtn.disabled = false;
+      })
+      .withFailureHandler(function(err) {
+        statusDiv.innerHTML = '<span class="error">系統連線失敗: ' + err + '</span>';
+        submitBtn.disabled = false;
+      })
+      .processData(payload);
+  }
+
+  window.onload = initWebcam;
+</script>
+
+</body>
+</html>
