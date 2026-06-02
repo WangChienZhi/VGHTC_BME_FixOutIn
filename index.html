@@ -128,7 +128,7 @@
     }
   });
 
-  // 🚀 送出表單資料與拍照 (跨網域 fetch 版本)
+ // 送出表單資料與拍照 (已修正為雙向防錯攔截版本)
   function handleSubmit(event) {
     event.preventDefault();
     
@@ -147,20 +147,25 @@
       image: imageDataUrl
     };
     
-    // 🔗 ⚠️ 請把下方引號內的網址，換成您剛剛重新部署得到的最新 GAS 網址 ⚠️
+    // 請換成您最新發布的 GAS 網頁應用程式網址 
     const googleScriptUrl = "https://script.google.com/macros/s/AKfycbwbmdo8KVolWYvOORLghPkCQoQ8kSHkqM7eD-ZVL0W3h249rZrE289UUs-k0-e5Z6M/exec"; 
 
-    // 使用 fetch 跨網域發送資料給 Google 後端
+    // 改用雙向連線，去接收 Google 傳回的防錯檢查結果
     fetch(googleScriptUrl, {
       method: "POST",
-      mode: "no-cors", 
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     })
-    .then(() => {
-      statusDiv.innerHTML = '<span class="success">✓ ' + currentAction + ' 紀錄成功！照片已同步上傳。</span>';
-      document.getElementById('dataForm').reset();
-      repairIdInput.focus(); 
+    .then(res => res.json()) // 解析 Google 回傳的結果
+    .then(response => {
+      if (response.success) {
+        // 真正成功才寫入並重置
+        statusDiv.innerHTML = '<span class="success">✓ ' + currentAction + ' 紀錄成功！照片已同步上傳。</span>';
+        document.getElementById('dataForm').reset();
+        repairIdInput.focus(); 
+      } else {
+        // 抓到重複送件/取件，噴出紅色警告框阻擋！
+        statusDiv.innerHTML = '<span class="error">⚠️ 登記失敗：' + response.error + '</span>';
+      }
       submitBtn.disabled = false;
     })
     .catch(err => {
