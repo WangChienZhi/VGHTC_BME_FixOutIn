@@ -112,8 +112,8 @@
       <video id="webcam" autoplay playsinline muted></video>
     </div>
     
-    <div class="flip-btn-container">
-      <button type="button" class="btn-flip" onclick="toggleFlip()">🔄 翻轉鏡頭畫面</button>
+   <div class="flip-btn-container" style="text-align: right; margin-top: -10px; margin-bottom: 15px;">
+      <button type="button" id="switchCamBtn" class="btn-flip" style="background: #007bff;" onclick="switchCamera()">📷 切換前後鏡頭</button>
     </div>
     
     <button type="submit" id="submitBtn" class="submit-in">確認提交 (送件)</button>
@@ -125,18 +125,26 @@
 <canvas id="canvas" style="display:none;" width="640" height="480"></canvas>
 
 <script>
+<script>
   let currentAction = "送件";
-  // 新增：控制相機翻轉的邏輯
-  function toggleFlip() {
-    const videoElement = document.getElementById('webcam');
-    // 自動在 <video> 標籤上 切換/移除 .flipped 這個 CSS 類別
-    videoElement.classList.toggle('flipped');
-  }
+  
+  // 切換前後鏡頭專用的全域變數
+  let videoDevices = [];      
+  let currentDeviceIndex = 0; 
+  let currentStream = null;   
+  
+  // 原有的網頁 DOM 元素宣告
   const video = document.getElementById('webcam');
   const canvas = document.getElementById('canvas');
   const repairIdInput = document.getElementById('repairId');
   const submitBtn = document.getElementById('submitBtn');
   const statusDiv = document.getElementById('status');
+
+  // 緊接著就是接上我們先前寫好的 initWebcam 函式
+  async function initWebcam() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      currentStream = stream;
 
   // 啟動相機
   async function initWebcam() {
