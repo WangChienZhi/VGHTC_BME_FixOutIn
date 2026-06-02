@@ -129,7 +129,7 @@
     }
   });
 
-  // 送出表單資料與拍照
+ // 送出表單資料與拍照 (已修正為跨網域 fetch 版本)
   function handleSubmit(event) {
     event.preventDefault();
     
@@ -148,23 +148,27 @@
       image: imageDataUrl
     };
     
-    // 呼叫 Code.gs 後端進行資料處理與防錯檢驗
-    google.script.run
-      .withSuccessHandler(function(response) {
-        if(response.success) {
-          statusDiv.innerHTML = '<span class="success">✓ ' + currentAction + ' 紀錄成功！照片已同步上傳。</span>';
-          document.getElementById('dataForm').reset();
-          repairIdInput.focus(); // 成功後焦點自動跳回單號，方便連續操作
-        } else {
-          statusDiv.innerHTML = '<span class="error">⚠️ 錯誤：' + response.error + '</span>';
-        }
-        submitBtn.disabled = false;
-      })
-      .withFailureHandler(function(err) {
-        statusDiv.innerHTML = '<span class="error">系統連線失敗: ' + err + '</span>';
-        submitBtn.disabled = false;
-      })
-      .processData(payload);
+    // 請記得將下方引號內的網址，換成你 Google Apps Script 部署得到的真實「網頁應用程式網址」 
+    const googleScriptUrl = "https://script.google.com/macros/s/AKfycbwbmdo8KVolWYvOORLghPkCQoQ8kSHkqM7eD-ZVL0W3h249rZrE289UUs-k0-e5Z6M/exec"; 
+
+    // 使用標準 fetch 發送資料給 Google 後端
+    fetch(googleScriptUrl, {
+      method: "POST",
+      mode: "no-cors", // 繞過瀏覽器的跨網域安全阻擋
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+    .then(() => {
+      // 順利發送出去後，直接觸發前端成功狀態並重置表單
+      statusDiv.innerHTML = '<span class="success">✓ ' + currentAction + ' 紀錄成功！照片已同步上傳。</span>';
+      document.getElementById('dataForm').reset();
+      repairIdInput.focus(); // 成功後焦點自動跳回單號，方便條碼機連續操作
+      submitBtn.disabled = false;
+    })
+    .catch(err => {
+      statusDiv.innerHTML = '<span class="error">系統連線失敗: ' + err + '</span>';
+      submitBtn.disabled = false;
+    });
   }
 
   window.onload = initWebcam;
