@@ -9,7 +9,7 @@
     body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f6f9; color: #333; }
     .container { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     
-    /* 標題 */
+    /* 📈 標題優化：字體加大、粗體 */
     h2 { 
       text-align: center; 
       color: #0056b3; 
@@ -67,7 +67,7 @@
     .loading { color: #ffc107; }
     .success { color: #28a745; }
     
-    /* 錯誤警告框優化 */
+    /* 🛑 錯誤警告框優化 */
     .error { 
       color: #dc3545; 
       background: #fdf2f2; 
@@ -82,15 +82,45 @@
       text-overflow: ellipsis; 
     }
 
-    /* 底部備註文字樣式 */
+    /* 📌 底部備註區塊樣式：優雅舒適不搶眼 */
     .footer-note {
+      margin-top: 35px;
+      border-top: 2px dashed #bbb;
+      padding-top: 20px;
+      font-size: 14px;
+      color: #555;
+      line-height: 1.6;
+    }
+    .footer-title {
       text-align: center;
-      margin-top: 30px;
-      font-size: 15px;
-      color: #666;
+      font-size: 18px;
+      color: #c92a2a; /* 醒目的工務警告紅 */
       font-weight: bold;
-      border-top: 1px dashed #ccc;
-      padding-top: 15px;
+      margin-bottom: 15px;
+    }
+    .footer-content {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #e9ecef;
+      max-height: 300px;
+      overflow-y: auto; /* 萬一太長允許滑動，不破壞排版 */
+    }
+    .footer-section {
+      margin-bottom: 12px;
+    }
+    .footer-section strong {
+      color: #333;
+      display: block;
+      margin-bottom: 3px;
+      border-left: 3px solid #6c757d;
+      padding-left: 6px;
+    }
+    .footer-section p {
+      margin: 0;
+      color: #666;
+      font-size: 13px;
+      text-align: justify;
     }
   </style>
 </head>
@@ -128,7 +158,67 @@
   
   <div id="status"></div>
   
-  <div class="footer-note">以下屬工務室業務</div>
+  <div class="footer-note">
+    <div class="footer-title">以下屬工務室業務 請勿登入</div>
+    <div class="footer-content">
+      
+      <div class="footer-section">
+        <strong>一、醫療氣體與管路相關設備</strong>
+        <p>氧氣流量錶(O2) / 空氣流量計(AIR) / 氮氣流量錶(N2) / 氣體流量錶 / 氧氣鋼瓶流量錶(O2) / 氮氣鋼瓶流量錶(N2) / 二氧化碳鋼瓶流量錶(CO2) / 氣體鋼瓶流量錶等；氣體鋼瓶 / 固定架接頭 / 氣體Y接頭 / 氣體流量計墊片 / 鋼瓶O型環 / 氣體連接延長管 / 空氣風槍 / 氣柱懸臂 / 空氣壓縮機等</p>
+      </div>
+
+      <div class="footer-section">
+        <strong>二、抽吸與引流及其相關設備</strong>
+        <p>抽痰錶(SUCTION) / 間歇抽吸調節器 / 胃減壓調節器 / 胸腔引流調節器(EMERSON)等；抽痰表安全瓶 / 胸腔引流調節器O型環 / 引流瓶架等</p>
+      </div>
+
+      <div class="footer-section">
+        <strong>三、病床、推床與周邊家具</strong>
+        <p>各式病床(含床墊) / 各式推床 / 各式陪客床 / 床旁椅 / 椅凳 / 鐵板凳 / 腳凳 / 腳蹬 / 床上桌等</p>
+      </div>
+
+      <div class="footer-section">
+        <strong>四、護理工作車與推車及其相關設備</strong>
+        <p>各式行動護理推車 / 各式藥車 / 迴診車 / 急救車 / 麻醉車 / 診療車 / 工作車(含條碼機) / 嬰兒車 / 各式推車等</p>
+      </div>
+
+      <div class="footer-section">
+        <strong>五、身高體重計與磅秤及其相關設備</strong>
+        <p>各式身高體重計(含讀卡機、平板) / 嬰兒身高體重計 / 嬰兒磅秤 / 各式體重計 / 座式磅秤 / 輪椅磅秤 / 床上磅秤 / 各式磅秤等；電子磅秤 / 指針磅秤 / 電子天平等</p>
+      </div>
+
+      <div class="footer-section">
+        <strong>六、消毒與洗滌設備及其相關設備</strong>
+        <p>高壓滅菌消毒鍋 / 消毒鍋 / 電熱式蒸氣滅菌器 / 低溫滅菌鍋 / 電漿鍋 / 洗車機推車 / 洗車機車架等；便盆消毒器 / 便盆洗滌兼消毒器 / 便盆洗滌機 / 管路烘乾機 / 烘乾機等；紫外線殺菌箱 / 紫外線殺菌燈(活動式、固定式、手術室) / 紫消指示燈 / 紫消燈計時器 / 紫消燈記錄器等</p>
+      </div>
+
+      <div class="footer-section">
+        <strong>七、冷藏冷凍及其相關設備</strong>
+        <p>藥品&試劑&檢體冷藏櫃(含儲血) / 藥品冷藏箱 / 藥品&試劑&檢體冷藏庫 / 藥品&試劑&檢體冰箱 / 實驗冰箱 / 冷藏櫃電子溫度記錄器 / 冷凍保存器(組織) / 冷凍櫃(含低溫、負80度) / 液態氮桶 / 製冰機等</p>
+      </div>
+
+      <div class="footer-section">
+        <strong>八、溫度相關及其設備</strong>
+        <p>保溫燈 / 紅外線燈 / 烤燈 / 保溫箱 / 溫箱 / 加熱箱 / 溫鍋 / 溫奶箱 / 熱敷保溫箱 / 烘箱紅外線溫度計 / 酒精溫度計 / 電子溫度計 / 溫度計 / 數位溫濕度計 / 溫濕度記錄收集器等</p>
+      </div>
+
+      <div class="footer-section">
+        <strong>九、生物安全、操作檯與純水系統</strong>
+        <p>生物安全操作櫃 / 生物安全操作檯 / 無菌操作臺 / 無菌操作箱 / 水平操作台 / 水平式操作台 / PCR操作台 / 化學操作櫃 / 排氣裝置 / 病理檢切台；懸吊式麻醉機工作站 / 刷手台(含腳控開關) / 水槽 / 緊急沖身洗眼器；純水製造系統 / 超純水製造系統 / RO水製造設備</p>
+      </div>
+
+      <div class="footer-section">
+        <strong>十、其他</strong>
+        <p>護士呼叫系統 / 個別裝置呼叫系統 / 叫人鈴 / 電鈴 / 手術室電子鐘 / 影像監控系統等</p>
+      </div>
+
+      <div class="footer-section">
+        <strong>十一、醫療輔具五金與電器</strong>
+        <p>各式助行器 / 真空機 / 封口機 / 各式輪椅 / 移位機 / 升降便器椅 / 洗澡機(含推車) / 洗澡裝置(含推車) / 雷射水平儀 / 各式點滴架 / 視力檢查燈 / 筆燈 / 檯燈 / 床頭燈 / 電視機 / 微波爐 / 電鍋等</p>
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <canvas id="canvas" style="display:none;" width="640" height="480"></canvas>
